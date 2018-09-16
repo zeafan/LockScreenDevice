@@ -36,30 +36,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        boolean isActive = devicePolicyManager.isAdminActive(compName);
-        disable.setVisibility(isActive ? View.VISIBLE : View.GONE);
-        enable.setVisibility(isActive ? View.GONE : View.VISIBLE);
-    }
-
-    @Override
     public void onClick(View view) {
         if (view == lock) {
             boolean active = devicePolicyManager.isAdminActive(compName);
-
             if (active) {
                 devicePolicyManager.lockNow();
             } else {
-                Toast.makeText(this, "You need to enable the Admin Device Features", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+                intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, compName);
+                intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Additional text explaining why we need this permission");
+                startActivityForResult(intent, RESULT_ENABLE);
             }
 
         } else if (view == enable) {
 
-            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, compName);
-            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Additional text explaining why we need this permission");
-            startActivityForResult(intent, RESULT_ENABLE);
+
 
         } else if (view == disable) {
             devicePolicyManager.removeActiveAdmin(compName);
